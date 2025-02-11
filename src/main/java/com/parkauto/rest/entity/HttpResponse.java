@@ -10,9 +10,9 @@ public class HttpResponse {
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern="MM-dd-yyyy hh:mm:ss", timezone="GMT+2")
 	private Date timeStamp;
-	private int httpStatusCode; //200,201,400,500
-	private HttpStatus httpStatus;
-	private String reason;
+	private int httpStatusCode; // 200,201,400,500
+	private HttpStatus httpStatus; // OK,Forbidden
+	private String reason; // Successfull
 	private String message;
 	
 	public HttpResponse() {
