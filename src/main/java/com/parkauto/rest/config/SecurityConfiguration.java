@@ -46,7 +46,7 @@ public class SecurityConfiguration {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(
-				request -> request.requestMatchers(antMatcher("/api/auth/**")).permitAll()
+				request -> request.requestMatchers(antMatcher("/**")).permitAll()
 				.requestMatchers(antMatcher("/api/admin")).hasAuthority(Role.ROLE_ADMIN.name())
 				.requestMatchers(antMatcher("/api/user")).hasAuthority(Role.ROLE_USER.name())
 				.anyRequest().authenticated())

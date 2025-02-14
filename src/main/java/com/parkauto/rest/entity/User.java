@@ -24,6 +24,7 @@ public class User implements UserDetails {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	private String userId;	// ID de l'utilisateur qui sera visible sur l'application web
 	
 	@Column(name="FIRSTNAME")
 	private String firstname;
@@ -70,7 +71,7 @@ public class User implements UserDetails {
 
     @Override
 	public String getUsername() {
-		return email;
+		return username;
 	}
 
 	

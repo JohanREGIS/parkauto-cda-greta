@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RequiredArgsConstructor
 public class AdminController {
 
-	@GetMapping("/admin")
+	@GetMapping("/auth/admin")
 	public ResponseEntity<String> sayHello() {
 		return  ResponseEntity.ok("Hello Admin");
 	}
