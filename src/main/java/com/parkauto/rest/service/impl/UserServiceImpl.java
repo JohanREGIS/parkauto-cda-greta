@@ -2,6 +2,7 @@ package com.parkauto.rest.service.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -44,10 +45,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	private LoginAttemptService loginAttemptService;
 	
 	
-	public UserServiceImpl(IUserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
+	public UserServiceImpl(IUserRepository userRepository, BCryptPasswordEncoder passwordEncoder, LoginAttemptService loginAttemptService) {
 		super();
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
+		this.loginAttemptService = loginAttemptService;
 	}
 
 	@Override
@@ -71,17 +73,24 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 			LOGGER.error(UserImplConstant.USER_NOT_FOUND_BY_USERNAME + username);
 			throw new UsernameNotFoundException(UserImplConstant.USER_NOT_FOUND_BY_USERNAME + username);
 		} else {
-			validateLoginAttempt(user);
-			user.setLastLoginDateDisplay(user.getLastLoginDate());
-			user.setLastLoginDate(new Date());
-			userRepository.save(user);
-			
-			return user;
+			try {
+				validateLoginAttempt(user);
+				
+				user.setLastLoginDateDisplay(user.getLastLoginDate());
+				user.setLastLoginDate(new Date());
+				userRepository.save(user);
+				
+				return user;
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+			}
 		}
+		return null;
 	}
 
+
 	// Bloque un utilisateur si celui-ci a executé trop de tentatives de connexion avec un mauvais mot de passe
-	private void validateLoginAttempt(User user) {
+	private void validateLoginAttempt(User user) throws ExecutionException {
 		if(user.isNotLocked()) {
 			if(loginAttemptService.hasExceededMaxAttempts(user.getUsername())) {
 				user.setNotLocked(false);

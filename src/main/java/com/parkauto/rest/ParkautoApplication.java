@@ -30,6 +30,9 @@ public class ParkautoApplication implements CommandLineRunner {
 			user.setFirstname("admin");
 			user.setLastname("Admin");
 			user.setRole(Role.ROLE_ADMIN);
+			user.setActive(true);
+			user.setNotLocked(true);
+			user.setUsername("admin");
 			user.setPassword(new BCryptPasswordEncoder().encode("admin"));
 			
 			userRepository.save(user);

@@ -34,19 +34,17 @@ public class LoginAttemptService {
 		
 		try {
 			attempts = ATTEMPT_INCREMENT + loginAttemptCache.get(username);
+			loginAttemptCache.put(username, attempts);
+			
 		} catch(ExecutionException e) {
 			e.printStackTrace();
 		}
-		loginAttemptCache.put(username, attempts);
+		
 	}
 	
-	public boolean hasExceededMaxAttempts(String username) {
-		try {
-			return loginAttemptCache.get(username) >= MAXIMUM_NUMBER_OF_ATTEMPTS;
-		} catch(ExecutionException e) {
-			e.printStackTrace();
-		}
-		return false; // Connexion OK
+	public boolean hasExceededMaxAttempts(String username) throws ExecutionException {
+		
+		return loginAttemptCache.get(username) >= MAXIMUM_NUMBER_OF_ATTEMPTS;
 	}
 	
 	public void evictUserFromLoginAttemptCache(String username) {
