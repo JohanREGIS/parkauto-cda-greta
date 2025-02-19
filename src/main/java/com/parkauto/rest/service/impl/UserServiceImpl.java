@@ -25,6 +25,7 @@ import com.parkauto.rest.exception.EmailExistException;
 import com.parkauto.rest.exception.UserNotFoundException;
 import com.parkauto.rest.exception.UsernameExistException;
 import com.parkauto.rest.repository.IUserRepository;
+import com.parkauto.rest.service.EmailService;
 import com.parkauto.rest.service.LoginAttemptService;
 import com.parkauto.rest.service.UserService;
 
@@ -44,12 +45,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 	private LoginAttemptService loginAttemptService;
 	
+	@Autowired
+	private EmailService emailService;
 	
-	public UserServiceImpl(IUserRepository userRepository, BCryptPasswordEncoder passwordEncoder, LoginAttemptService loginAttemptService) {
+	public UserServiceImpl(IUserRepository userRepository, BCryptPasswordEncoder passwordEncoder, LoginAttemptService loginAttemptService, EmailService emailService) {
 		super();
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.loginAttemptService = loginAttemptService;
+		this.emailService = emailService;
 	}
 
 	@Override
@@ -67,6 +71,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		
 		User user = userRepository.findByUsername(username);
 		
 		if(user == null) {
@@ -127,6 +132,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 			userRepository.save(user);
 			
 			LOGGER.info(UserImplConstant.NEW_USER_PASSWORD + password);
+			
+			emailService.sendConfirmRegister(email, username, password);
 			
 			return user;
 		} catch (UserNotFoundException | UsernameExistException | EmailExistException e) {
